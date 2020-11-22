@@ -1,6 +1,6 @@
 # Google homepage clone
 
-#### [TheOdinProject](https://www.theodinproject.com/lessons/html-css)
+#### [Project: Google Homepage](https://www.theodinproject.com/lessons/html-css)
 
 [Live Demo](https://chxtio.github.io/The-Odin-Project/google-homepage/)
 
