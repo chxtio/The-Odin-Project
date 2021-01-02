@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Etch-A-Sketch</title>
+  <link rel="stylesheet" href="Style.css">
+</head>
+
+<body>
+  <header class="title">
+    <h1>Etch A Sketch</h1>
+  </header>
+
+  <div class="grid-size-btns">
+    <button type="button" class="size-buttons" id="size-10">10x10</button>
+    <button type="button" class="size-buttons" id="size-20">20x20</button>
+    <button type="button" class="size-buttons" id="size-30">30x30</button>
+  </div>
+
+  <div class="pen-color-btns">
+    <button type="button" class="color-buttons" id="blue">Blue</button>
+    <button type="button" class="color-buttons" id="pick" disabled>Pick: <input type="color" id="colorpicker" value="#8B8BC1"></button>
+    <button type="button" class="color-buttons" id="rainbow">Rainbow</button>
+    <!-- <button type="button" class="color-buttons" id="eraser">Eraser</button> -->
+  </div>
+
+  <div class="grid-wrapper">
+    <div class="grid-container">
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+
+</html>

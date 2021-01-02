@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Outline&display=swap');
+
+:root {
+  --grid-cols: 16;
+  --grid-rows: 16;
+  --content-width: 500px;
+  --items-width: 10px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Audiowides', cursive;
+  color: #FFFFFF;
+  background: rgb(2,0,36);
+ background-image: 
+ linear-gradient(45deg, rgba(2,0,36,0.7), rgba(2,21,58,0.7), rgba(0,212,255,0.7))
+  , url(https://www.aljazeera.com/wp-content/uploads/2019/06/5f77ac61d2ab4d6a86e1aa0b110179c8_18.jpeg?fit=1000%2C562);
+ background-position: center;
+ background-repeat: no-repeat;
+ background-size: cover;
+}
+
+.title {
+  font-size: 25px;
+  text-shadow: 0 0 13px #FFF;
+}
+
+.grid-container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-gap: 1px;
+  border: 5px solid #5A236C;
+  border-radius: 2px;
+  box-shadow: 0 0 30px #392270;
+  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+  background-color: black !important;
+  margin: 0 auto;
+}
+
+.grid-wrapper {
+    max-height: var(--content-width);
+    max-width: var(--content-width);
+    margin: 30px auto; 
+}
+
+.grid-items {
+  width: var(--items-width);
+  height: var(--items-width);
+  text-align: center;
+  background-color: white; /*#8A0651 424242*/
+   box-shadow: 0 0 13px #FFF;
+}
+
+.grid-size-btns, .pen-color-btns {
+    display: flex;
+    justify-content: space-between;
+    width: 25%;
+    margin: 5px auto;  
+}
+
+button {
+  margin: 7px;
+  padding: 10px;
+  width: 80px;
+  background-color: #8A0651; /*424242*/
+  color: #FFF;
+  text-shadow: 0 0 7px #FFF;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 0 5px #FFF, 0 0 5px #FFF inset;
+  cursor: pointer;
+  outline: 0 !important;
+  transition: all .3s ease-in;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 28.75em) {
+    :root {
+        --content-width: 400px;
+    }
+  
+  /*.grid-size-btns, .pen-color-btns {
+    width: 600px; */
+  }
+}
