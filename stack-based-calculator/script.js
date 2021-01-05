@@ -4,6 +4,7 @@ let subtract = (a, b) => a - b;
 let multiply = (a, b) => a * b;
 let divide = (a, b) => a / b;
 let operate = (operator, x, y) => operator(x, y);
+
 /*
 console.log(operate(add, 5, 7));
 console.log(operate(subtract, 7, 2));
@@ -45,6 +46,10 @@ function displayOutput() {
     displayTitle.style.color = "orange";
   } else {
     let evaluated = reversePolish(converted);
+    //let output = evaluated.toString().substring(0, 9);
+    let output = roundAccurately(evaluated, 15).toString().substring(0, 9);
+    console.log("evaluated: " + evaluated);
+    console.log("output: " + output);
     if (per) {
       displayTitle.innerText = "🤖 postfix";
       answer = infixToReversePolish(evaluated + " / 100");
@@ -66,7 +71,7 @@ function displayOutput() {
       displayRPN.style.color = "red";
       displayTitle.style.color = "red";
     } else {
-      displayAnswer.innerText = evaluated;
+      displayAnswer.innerText = output;
     }
     displayTitle.innerText = "🤖 postfix";
   }
@@ -224,6 +229,10 @@ function clear() {
   converted = "";
   updateDisplay();
   displayOutput();
+}
+
+function roundAccurately(num, places) {
+    return parseFloat(Math.round(num + 'e' + places) + 'e-' + places);
 }
 
 keyBtns.forEach((btn) => {

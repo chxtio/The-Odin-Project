@@ -8,7 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0;
-  background-color: purple; */#ecf0f1*/
+  background-color: azure; 
   min-height: 100vh;
   font-family: "Roboto", sans-serif;
   align-items: center;
@@ -17,7 +17,7 @@ body {
 
 .title h1 {
   color: #ff7800;
-    font-size: 2rem;
+  font-size: 2rem;
 }
 .calculator {
   box-shadow: 2px 5px 15px rgba(0,0,0,0.5);
@@ -40,13 +40,18 @@ body {
   text-align: right;
   background-color: gray;
   padding: 10px;
-  font-size: 30px;
   border: 5px solid black;
+  font-size: 30px; 
+  font-weight: bold;
+}
+
+#express, #answer-right {
+   text-shadow: 1.3px 1.3px #383838;
 }
 
 button {
-  width: 50px;
-  height: 50px;
+  width: 65px;
+  height: 55px;
   margin: 5px;
   /* 4 cols x (50px + 10px margin) = 240px */ 
   border-radius: 4px;
@@ -59,8 +64,8 @@ button {
 }
 
 #zero {
-    grid-column: span 2;
-    width: 125px;
+   grid-column: span 2;
+   width: 140px;
 }
 
 button:hover, .operator:focus {
@@ -77,28 +82,22 @@ button:hover, .operator:focus {
 
 .clear, .sign, .percent {
   background-color: dodgerblue;
-  padding-right: 25px;
 }
 
-/*#answer {
-  display: flex;
-  justify-content: space-between;
-  /*flex-direction: column;
-} */
+@media (max-width: 420px) {
+  .clear, .sign, .percent {
+  padding-right: 15px;
+  text-align: left;
+}
+}
 
 .answer-div {
   display: flex;
-  justify-content: space-between;
-  
-}
-
-#answer-right {
-  
-  
+  justify-content: space-between; 
 }
 
 #answer-left, #answer-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 900;
   color: orange;
 }
