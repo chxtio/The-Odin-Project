@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>TOP: Library</title>
+  <title></title>
+  <link rel="stylesheet" href="Style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Library</h1>
+    </header>
+
+    <form action="">
+        <label for="title">Title: *</label><br>
+        <input type="text" id="title" name="title" required><br>
+        <label for="Author">Author: *</label><br>
+        <input type="text" id="author" name="author" required><br>
+        <label for="Pages">Pages: *</label><br>
+        <input type="text" id="pages" name="pages" required><br>
+        <label for="status">Status: *</label><br>
+        <select name="status" id="status">Status:
+            <option value="Read">Read</option>
+            <option value="Not Read" selected>Not Read</option>
+            <option value="In Progress">In Progress</option>
+        </select>
+        <br><br>
+        <!-- <input type="submit" value="submit"> -->
+        <button type="submit" value="submit" class="button">Add New Book!</button>
+    </form>
+
+    <!-- <button type="button" class="button">Add New Book!</button> -->
+
+    <div class="row">
+        <div></div>
+        <table class="lib_table">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Pages</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            <tbody id="book_entries"></tbody>
+        </table>
+    </div>
+    <div id="container"></div>
+    
+  <script src="js/scripts.js" defer></script>
+</body>
+</html>
