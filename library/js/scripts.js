@@ -56,7 +56,7 @@
      title = book.title,
      author = book.author,
      pages = book.pages,
-    //  status = book.statusOptions[status],
+     status = book.statusOptions[status],
      timestamp: firebase.firestore.FieldValue.serverTimestamp()
    }).catch(function(error) {
      console.error('Error writing data to Firebase Database', error);
