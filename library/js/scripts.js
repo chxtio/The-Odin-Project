@@ -1,4 +1,3 @@
-
  'use strict';
 
  // Signs-in your app
@@ -35,53 +34,53 @@
    return !!firebase.auth().currentUser;
  }
  
- // Saves a new message on the Cloud Firestore.
-//  function saveMessage(messageText) {
-//    // Add a new message entry to the Firebase database.
-//    return firebase.firestore().collection('messages').add({
-//      name: getUserName(),
-//      text: messageText,
-//      profilePicUrl: getProfilePicUrl(),
-//      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-//    }).catch(function(error) {
-//      console.error('Error writing new message to Firebase Database', error);
-//    });
-//  }
-
 // Save new book info on the Cloud Firestore
- function saveBook(bookTitle, bookAuthor, bookPages, bookStatus) {
-   // Add new book entry to the Firebase database
-   alert("Attempting to save to database");
-   return firebase.firestore().collection('books').add({
-     // title.value, author.value, pages.value, indexDict[status.value]
-     title : bookTitle,
-     author : bookAuthor,
-     pages : bookPages,
-     status : bookStatus,
-     timestamp: firebase.firestore.FieldValue.serverTimestamp()
-   }).catch(function(error) {
-     console.error('Error writing data to Firebase Database', error);
+function saveBook(book) {
+  // Add new book entry to the Firebase database
+  console.log("Attempting to save to database");
+  return firebase.firestore().collection('books').add({
+    // title.value, author.value, pages.value, indexDict[status.value]
+    title : book.title,
+    author : book.author,
+    pages : book.pages,
+    status : book.status,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(error) {
+    console.error('Error writing data to Firebase Database', error);
+  });
+}
+ 
+ // Loads book entries and listens for upcoming ones.
+ function loadLibrary() {
+   // Create the query to load the books
+  //  var query = firebase.firestore().collection('messages').orderBy('timestamp', 'desc').limit(12);
+   var query = firebase.firestore().collection('books').orderBy('timestamp', 'asc');
+   
+   // Start listening to the query.
+   query.onSnapshot(function(snapshot) {
+     snapshot.docChanges().forEach(function(change) {
+      //  if (change.type === 'removed') {
+      //    deleteMessage(change.doc.id);
+      //  } else {
+
+        console.log("Debugging");
+        console.log(change.type);
+        if (change.type === 'added') {
+          var data = change.doc.data();
+          //  const newBook = new Book(title.value, author.value, pages.value, indexDict[status.value]);
+          console.log("status test: ", data.status);
+          const newBook = new Book(data.title, data.author, data.pages, indexDict[data.status]);
+          addBookToLibrary(newBook);
+        } else if (change.type === 'removed') {
+          console.log("test- removed");
+          deleteBook(change.doc.id);
+        }
+
+
+      //  }
+     });
    });
  }
- 
-//  // Loads chat messages history and listens for upcoming ones.
-//  function loadMessages() {
-//    // Create the query to load the last 12 messages and listen for new ones.
-//    var query = firebase.firestore().collection('messages').orderBy('timestamp', 'desc').limit(12);
-   
-//    // Start listening to the query.
-//    query.onSnapshot(function(snapshot) {
-//      snapshot.docChanges().forEach(function(change) {
-//        if (change.type === 'removed') {
-//          deleteMessage(change.doc.id);
-//        } else {
-//          var message = change.doc.data();
-//          displayMessage(change.doc.id, message.timestamp, message.name,
-//                        message.text, message.profilePicUrl, message.imageUrl);
-//        }
-//      });
-//    });
-//  }
  
 //  // Saves a new message containing an image in Firebase.
 //  // This first saves the image in Firebase storage.
@@ -386,7 +385,7 @@
 //  firebase.performance();
  
 //  // We load currently existing chat messages and listen to new ones.
-//  loadMessages();
+  loadLibrary();
  
 //---------------FIREBASE END--------------------------///
 
@@ -418,7 +417,7 @@ function Book(title, author, pages, status) {
 }
 
 function addBookToLibrary(newBook) {
-    myLibrary.push(newBook);
+    // myLibrary.push(newBook);
     // saveBook(newBook); //Firestore
     displayLibrary(newBook);
 
@@ -500,20 +499,8 @@ function toggleStatus(e) {
   e.target.innerHTML = newStatus;
 }
 
-function processForm() {
-  console.log(author.value);
-  console.log(title.value);
-  console.log(pages.value);
-  console.log(indexDict[status.value]);
-  e.preventDefault();
-  saveBook(title.value, author.value, pages.value, indexDict[status.value]);
-  addBookToLibrary(new Book(author.value, title.value, pages.value, indexDict[status.value]));
-  // displayLibrary;
-}
-
 form.addEventListener("submit", e => {
   // alert("submited");
-  // console.log(e.target);
   console.log(author.value);
   console.log(title.value);
   console.log(pages.value);
@@ -522,7 +509,9 @@ form.addEventListener("submit", e => {
 
   // clearDisplay();
   const newBook = new Book(title.value, author.value, pages.value, indexDict[status.value]);
-  addBookToLibrary(newBook);
+  // saveBook(title.value, author.value, pages.value, indexDict[status.value]);
+  saveBook(newBook);
+  // addBookToLibrary(newBook);
   console.log(newBook.info());
   // displayLibrary();
   clearForm();
