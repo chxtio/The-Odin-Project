@@ -49,14 +49,15 @@
 //  }
 
 // Save new book info on the Cloud Firestore
- function saveBook(book) {
+ function saveBook(bookTitle, bookAuthor, bookPages, bookStatus) {
    // Add new book entry to the Firebase database
+   alert("Attempting to save to database");
    return firebase.firestore().collection('books').add({
      // title.value, author.value, pages.value, indexDict[status.value]
-     title : book.title,
-     author : book.author,
-     pages : book.pages,
-     status : book.statusOptions[status],
+     title : bookTitle,
+     author : bookAuthor,
+     pages : bookPages,
+     status : bookStatus,
      timestamp: firebase.firestore.FieldValue.serverTimestamp()
    }).catch(function(error) {
      console.error('Error writing data to Firebase Database', error);
@@ -418,7 +419,7 @@ function Book(title, author, pages, status) {
 
 function addBookToLibrary(newBook) {
     myLibrary.push(newBook);
-    saveBook(newBook); //Firestore
+    // saveBook(newBook); //Firestore
     displayLibrary(newBook);
 
     deleteBtns = document.querySelectorAll(".delete-button");
@@ -505,6 +506,7 @@ function processForm() {
   console.log(pages.value);
   console.log(indexDict[status.value]);
   e.preventDefault();
+  saveBook(title.value, author.value, pages.value, indexDict[status.value]);
   addBookToLibrary(new Book(author.value, title.value, pages.value, indexDict[status.value]));
   // displayLibrary;
 }
