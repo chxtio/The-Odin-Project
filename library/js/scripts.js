@@ -1,14 +1,14 @@
 
  'use strict';
 
- // Signs-in Friendly Chat.
+ // Signs-in your app
  function signIn() {
    // Sign in Firebase using popup auth and Google as the identity provider.
    var provider = new firebase.auth.GoogleAuthProvider();
    firebase.auth().signInWithPopup(provider);
  }
  
- // Signs-out of Friendly Chat.
+ // Signs-out of your app
  function signOut() {
    // Sign out of Firebase.
    firebase.auth().signOut();
@@ -35,7 +35,7 @@
    return !!firebase.auth().currentUser;
  }
  
-//  // Saves a new message on the Cloud Firestore.
+ // Saves a new message on the Cloud Firestore.
 //  function saveMessage(messageText) {
 //    // Add a new message entry to the Firebase database.
 //    return firebase.firestore().collection('messages').add({
@@ -47,6 +47,21 @@
 //      console.error('Error writing new message to Firebase Database', error);
 //    });
 //  }
+
+// Save new book info on the Cloud Firestore
+ function saveBook(book) {
+   // Add new book entry to the Firebase database
+   return firebase.firestore().collection('books').add({
+     // title.value, author.value, pages.value, indexDict[status.value]
+     title = book.title,
+     author = book.author,
+     pages = book.pages,
+    //  status = book.statusOptions[status],
+     timestamp: firebase.firestore.FieldValue.serverTimestamp()
+   }).catch(function(error) {
+     console.error('Error writing data to Firebase Database', error);
+   });
+ }
  
 //  // Loads chat messages history and listens for upcoming ones.
 //  function loadMessages() {
@@ -177,8 +192,8 @@
      // Hide sign-in button.
      signInButtonElement.setAttribute('hidden', 'true');
  
-     // We save the Firebase Messaging Device token and enable notifications.
-     saveMessagingDeviceToken();
+    //  // We save the Firebase Messaging Device token and enable notifications.
+    //  saveMessagingDeviceToken();
    } else { // User is signed out!
      // Hide user's profile and sign-out button.
      userNameElement.setAttribute('hidden', 'true');
@@ -394,7 +409,6 @@ function Book(title, author, pages, status) {
     this.title = title;
     this.author = author;
     this.pages = pages;
-    
     let statusIndex = status;
     this.status = statusOptions[statusIndex];
     this.info = function() {
@@ -404,24 +418,11 @@ function Book(title, author, pages, status) {
 
 function addBookToLibrary(newBook) {
     myLibrary.push(newBook);
+    // saveBook(newBook); //Firestore
     displayLibrary(newBook);
 
     deleteBtns = document.querySelectorAll(".delete-button");
     statusBtns = document.querySelectorAll(".status-button");
-
-    // // Delete button clicked
-    // deleteBtns.forEach((btn) => {
-    //   btn.addEventListener("click", (e) => {
-    //     deleteBook(e);
-    //   }); 
-    // });
-
-    // // Toggle status
-    // statusBtns.forEach((btn) => {
-    //   btn.addEventListener("click", (e) => {
-    //     toggleStatus(e);
-    //   });
-    // });
 }
 
 function displayLibrary(book) {
@@ -467,55 +468,15 @@ function displayLibrary(book) {
   // }
 }
 
-// function displayLibrary() {
-//     // const fields = ['title', 'author', 'pages', 'status'];
-
-//     for (let book of myLibrary) {
-//         console.log(book.info()); 
-//         // https://stackoverflow.com/questions/18333427/how-to-insert-a-row-in-an-html-table-body-in-javascript
-//         // Insert a row at end of table
-//         const newRow = lib_table.insertRow();
-        
-//         for (i = 0; i < fields.length; i++) {
-//             // Insert cell at end of the row
-//             const newCell = newRow.insertCell();
-
-//             if (i === fields.length - 1){
-//               const button = document.createElement("button");
-//               button.classList.add("status-button")
-//               button.innerHTML = `${book[fields[i]]}`;
-//               newCell.appendChild(button);
-//               continue;
-//             }
-
-//             // Append text node to cell
-//             const newText = document.createTextNode(`${book[fields[i]]}`);
-//             newCell.appendChild(newText);
-//         }
-
-//         // Add a delete button
-//         const newCell = newRow.insertCell();
-//         const button = document.createElement("button");
-//         button.classList.add("delete-button")
-//         button.innerHTML = "DELETE";
-//         newCell.appendChild(button);
-//     }
-// }
-
 const theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, 0);
 addBookToLibrary(theHobbit);
 addBookToLibrary(new Book("Alice in Wonderland", "Lewis Caroll", 500, 2));
 addBookToLibrary(new Book("A Game Of Thrones", "George R. R. Martin", 694, 1));
-// displayLibrary();
-
-// const deleteBtns = document.querySelectorAll(".delete-button");
-// const statusBtns = document.querySelectorAll(".status-button");
 
 function clearForm() {
   author.value = "";
   title.value = "";
   pages.value = "";
-  // indexDict[status.value] = "";
 }
 
 function clearDisplay() {
@@ -547,21 +508,6 @@ function processForm() {
   addBookToLibrary(new Book(author.value, title.value, pages.value, indexDict[status.value]));
   // displayLibrary;
 }
-
-
-// // Delete button clicked
-// deleteBtns.forEach((btn) => {
-//   btn.addEventListener("click", (e) => {
-//     deleteBook(e);
-//   }); 
-// });
-
-// // Toggle status
-// statusBtns.forEach((btn) => {
-//   btn.addEventListener("click", (e) => {
-//     toggleStatus(e);
-//   })
-// });
 
 form.addEventListener("submit", e => {
   // alert("submited");
