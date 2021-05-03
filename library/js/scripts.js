@@ -165,7 +165,8 @@ function loadLibrary() {
         // deleteBook(change.doc.id);
         console.log("LoadLib- Removed triggered");
       } else if (change.type === "modified") {
-				alert("LoadLib- change type of modified");
+				// alert("LoadLib- change type of modified");
+        console.log("LoadLib- change type of modified");
 			}
     });
   });
