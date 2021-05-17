@@ -39,7 +39,6 @@ function isUserSignedIn() {
 // Save new book info on the Cloud Firestore
 function saveBook(book) {
   // Add new book entry to the Firebase database
-  // var user = firebase.auth().currentUser.uid;
   return firebase
     .firestore()
     .collection(getUserName())
@@ -53,7 +52,7 @@ function saveBook(book) {
     .catch(function (error) {
       console.error("Error writing data to Firebase Database", error);
     });
-	console.log("Sucessfully saved information!");
+  console.log("Sucessfully saved information!");
 }
 
 function removeRow(e) {
@@ -67,11 +66,8 @@ function removeRow(e) {
   var docID;
 
   // Start listening to the query.
-  query
-    .get()
-    .then((snapshot) => {
+  query.get().then((snapshot) => {
     snapshot.docChanges().forEach(function (change) {
-      
       var data = change.doc.data();
       if (data.title === title && deleted) {
         docID = change.doc.id;
@@ -98,17 +94,15 @@ function removeRow(e) {
 
 function updateStatus(e, newStatus) {
   let rowTitle = e.target.parentNode.parentNode.firstChild.innerHTML;
-  
-    var query = firebase
+
+  var query = firebase
     .firestore()
     .collection(getUserName())
     .orderBy("timestamp", "asc");
 
   var docID;
   // Start listening to the query.
-   query
-     .get()
-     .then((snapshot) => {
+  query.get().then((snapshot) => {
     snapshot.docChanges().forEach(function (change) {
       console.log("docID: " + change.doc.id + " Update status: " + change.type);
       var data = change.doc.data();
@@ -118,7 +112,7 @@ function updateStatus(e, newStatus) {
           .firestore()
           .collection(getUserName())
           .doc(docID)
-					.update('status', newStatus)
+          .update("status", newStatus)
           .then(() => {
             console.log("Status successfully updated to :", newStatus);
             // Update status in UI
@@ -133,7 +127,7 @@ function updateStatus(e, newStatus) {
 }
 
 // Loads book entries and listens for upcoming ones.
-function loadLibrary(usern) { 
+function loadLibrary(usern) {
   // alert(usern + " is signed in")
 
   // Create the query to load the books
@@ -156,15 +150,14 @@ function loadLibrary(usern) {
           indexDict[data.status]
         );
         addBookToLibrary(newBook);
-        
       } else if (change.type === "removed") {
         // console.log("test- removed");
         // deleteBook(change.doc.id);
         // console.log("LoadLib- Removed triggered");
       } else if (change.type === "modified") {
-				// alert("LoadLib- change type of modified");
+        // alert("LoadLib- change type of modified");
         // console.log("LoadLib- change type of modified");
-			}
+      }
     });
   });
 }
@@ -205,7 +198,7 @@ function authStateObserver(user) {
 
     // Show sign-in button.
     signInButtonElement.removeAttribute("hidden");
-    
+
     // Load sample library
     clearDisplay();
     loadSampleLibrary();
@@ -268,7 +261,6 @@ var signOutButtonElement = document.getElementById("sign-out");
 signOutButtonElement.addEventListener("click", signOut);
 signInButtonElement.addEventListener("click", signIn);
 
-
 // initialize Firebase
 initFirebaseAuth();
 
@@ -303,9 +295,9 @@ function Book(title, author, pages, status) {
 
 function addBookToLibrary(newBook) {
   if (myLibrary.includes(newBook)) {
-		return;
-	}
-	myLibrary.push(newBook);
+    return;
+  }
+  myLibrary.push(newBook);
   displayLibrary(newBook);
   deleteBtns = document.querySelectorAll(".delete-button");
   statusBtns = document.querySelectorAll(".status-button");
@@ -354,7 +346,9 @@ function loadSampleLibrary() {
   const theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, 0);
   addBookToLibrary(theHobbit);
   addBookToLibrary(new Book("Alice in Wonderland", "Lewis Caroll", 500, 0));
-  addBookToLibrary(new Book("A Game Of Thrones", "George R. R. Martin", 694, 1));
+  addBookToLibrary(
+    new Book("A Game Of Thrones", "George R. R. Martin", 694, 1)
+  );
 }
 
 function clearForm() {
@@ -369,19 +363,19 @@ function clearDisplay() {
 
 function deleteBook(e) {
   if (!confirm("Are you sure you want to delete this book?")) {
-  return;
+    return;
   }
-  
+
   alert("delete triggered");
-	
-	let user = firebase.auth().currentUser;
-	// If signed in
+
+  let user = firebase.auth().currentUser;
+  // If signed in
   if (user) {
-		// remove data from Firestore
+    // remove data from Firestore
     removeRow(e);
-		return;
-  } 
-	
+    return;
+  }
+
   // Clear from the UI
   e.target.parentNode.parentNode.parentNode.removeChild(
     e.target.parentNode.parentNode
@@ -394,16 +388,16 @@ function toggleStatus(e) {
     nextIndex = 0;
   }
   let newStatus = statusOptions[nextIndex];
-	
-	let user = firebase.auth().currentUser;
-	// If signed in
+
+  let user = firebase.auth().currentUser;
+  // If signed in
   if (user) {
-		// Update data in Firestore
+    // Update data in Firestore
     updateStatus(e, newStatus);
-		return;
-  } 
-	
-	// Update status in UI
+    return;
+  }
+
+  // Update status in UI
   e.target.innerHTML = newStatus;
 }
 
@@ -421,14 +415,15 @@ form.addEventListener("submit", (e) => {
     pages.value,
     indexDict[status.value]
   );
-	
-	let user = firebase.auth().currentUser;
-  if (user) { 	// If signed in
-		saveBook(newBook);
+
+  let user = firebase.auth().currentUser;
+  if (user) {
+    // If signed in
+    saveBook(newBook);
   } else {
     addBookToLibrary(newBook);
   }
- 
+
   // console.log(newBook.info());
   clearForm();
 });

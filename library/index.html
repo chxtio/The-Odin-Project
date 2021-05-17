@@ -16,54 +16,41 @@
     <!-- <header>
         <h1>My Library</h1>
     </header> -->
- 
     <header class="mdl-layout__header mdl-color-text--white mdl-color--light-blue-700">
       <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
         <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
           <h3><i class="material-icons">library_books</i> My Library</h3>
         </div>
-        
         <div id="user-container">
           <div hidden id="user-pic"></div>
           <div hidden id="user-name"></div>
           <button hidden id="sign-out" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
             Sign-out
           </button>
-          
-            <button id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
-            <i class="material-icons">account_circle</i>Sign-In with Google
+          <button id="sign-in" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
+            <i class="material-icons">account_circle</i>Sign-in with Google
           </button>
-          <!-- <button id="sign-in-github" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--white">
-            <i class="material-icons">account_circle</i>Log In with GitHub
-          </button> -->
-        
         </div>
-    
       </div>
     </header>
+  </div>
 
-    </div>
-   
-
-    <div id="container">
+  <div id="container">
     <div class="row">
-        <div></div>
-        <table class="lib_table">
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Pages</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-            <tbody id="book_entries"></tbody>
-        </table>
+      <div></div>
+      <table class="lib_table">
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Pages</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+        <tbody id="book_entries"></tbody>
+      </table>
     </div>
-    
 
-    <!-- <button type="button" class="button">Add New Book!</button> -->
-
-    <form action=""> 
+    <form action="">
       <label for="title">Title: *</label><br>
       <input type="text" id="title" name="title" required><br>
       <label for="Author">Author: *</label><br>
@@ -72,45 +59,45 @@
       <input type="text" id="pages" name="pages" required><br>
       <label for="status">Status: *</label><br>
       <select name="status" id="status">Status:
-          <option value="Read">Read</option>
-          <option value="Not Read" selected>Not Read</option>
-          <option value="In Progress">In Progress</option>
+        <option value="Read">Read</option>
+        <option value="Not Read" selected>Not Read</option>
+        <option value="In Progress">In Progress</option>
       </select>
       <br><br>
-      <!-- <input type="submit" value="submit"> -->
-      <!-- <button type="submit" value="submit" class="button"><i class="material-icons">add_box</i> Add New Book!</button> -->
+
       <button type="submit" value="submit" class="add-button"><i class="material-icons">add_box</i> New Book</button>
-  </form>
-</div>
+    </form>
+  </div>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-app.js"></script>
-<!-- TODO: Add SDKs for Firebase products that you want to use
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-app.js"></script>
+  <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-     <!-- <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script> -->
-     <!-- Real time database https://firebase.google.com/docs/database/web/start?authuser=0-->
-     <!-- <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script> -->
-     <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-auth.js"></script>
-     <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-firestore.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-auth.js"></script> -->
+  <!-- Real time database https://firebase.google.com/docs/database/web/start?authuser=0-->
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-database.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.3/firebase-firestore.js"></script>
 
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyBFzNXwVnwrtjbPSZoBnZYk5ub_AJvVbI4",
-    authDomain: "top-library-c6576.firebaseapp.com",
-    projectId: "top-library-c6576",
-    storageBucket: "top-library-c6576.appspot.com",
-    messagingSenderId: "613201699005",
-    appId: "1:613201699005:web:5260f85a8e1559543dd7d4"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-</script>
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBFzNXwVnwrtjbPSZoBnZYk5ub_AJvVbI4",
+      authDomain: "top-library-c6576.firebaseapp.com",
+      projectId: "top-library-c6576",
+      storageBucket: "top-library-c6576.appspot.com",
+      messagingSenderId: "613201699005",
+      appId: "1:613201699005:web:5260f85a8e1559543dd7d4"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 
-<!-- <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.js"></script>
 <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />   -->
-<!-- <script src="/__/firebase/init.js"></script> -->
+  <!-- <script src="/__/firebase/init.js"></script> -->
 
   <script src="js/scripts.js"></script>
 </body>
+
 </html>
