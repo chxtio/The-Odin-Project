@@ -58,19 +58,24 @@ function saveBook(book) {
 
 function removeRow(e) {
   let title = e.target.parentNode.parentNode.firstChild.innerHTML;
+  let deleted = true;
   var query = firebase
     .firestore()
     .collection(getUserName())
     .orderBy("timestamp", "asc");
 
   var docID;
+
   // Start listening to the query.
-  query.onSnapshot(function (snapshot) {
+  query
+    .get()
+    .then((snapshot) => {
     snapshot.docChanges().forEach(function (change) {
+      
       var data = change.doc.data();
-      if (data.title === title) {
+      if (data.title === title && deleted) {
         docID = change.doc.id;
-        console.log("Deleteing: ", docID);
+        console.log("Deleting: ", docID);
         firebase
           .firestore()
           .collection(getUserName())
@@ -92,17 +97,20 @@ function removeRow(e) {
 }
 
 function updateStatus(e, newStatus) {
-	// let newStatus = statusOptions[nextIndex];
   let rowTitle = e.target.parentNode.parentNode.firstChild.innerHTML;
-  var query = firebase
+  
+    var query = firebase
     .firestore()
     .collection(getUserName())
     .orderBy("timestamp", "asc");
 
   var docID;
   // Start listening to the query.
-  query.onSnapshot(function (snapshot) {
+   query
+     .get()
+     .then((snapshot) => {
     snapshot.docChanges().forEach(function (change) {
+      console.log("docID: " + change.doc.id + " Update status: " + change.type);
       var data = change.doc.data();
       if (data.title === rowTitle) {
         docID = change.doc.id;
@@ -111,13 +119,6 @@ function updateStatus(e, newStatus) {
           .collection(getUserName())
           .doc(docID)
 					.update('status', newStatus)
-          // .set({
-          //   title: data.title,
-          //   author: data.author,
-          //   pages: data.pages,
-          //   status: newStatus,
-          //   timestamp: data.timestamp
-          // })
           .then(() => {
             console.log("Status successfully updated to :", newStatus);
             // Update status in UI
@@ -132,24 +133,19 @@ function updateStatus(e, newStatus) {
 }
 
 // Loads book entries and listens for upcoming ones.
-function loadLibrary() {
-  // var user = firebase.auth().currentUser;
-  // if (user) {
-  //   alert(user);
-  // } else {
-  //   // alert("nullnullnull");
-  // }
-  // alert(getUserName());
+function loadLibrary(usern) { 
+  // alert(usern + " is signed in")
+
   // Create the query to load the books
   var query = firebase
     .firestore()
-    .collection("Chris Tio")
+    .collection(usern)
     .orderBy("timestamp", "asc"); //.limit(12);
 
   // Start listening to the query.
   query.onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
-      // console.log(change.type);
+      console.log("LoadLib- Change type of " + change.type);
       if (change.type === "added") {
         var data = change.doc.data();
         // console.log("status test: ", data.status);
@@ -160,108 +156,18 @@ function loadLibrary() {
           indexDict[data.status]
         );
         addBookToLibrary(newBook);
+        
       } else if (change.type === "removed") {
         // console.log("test- removed");
         // deleteBook(change.doc.id);
-        console.log("LoadLib- Removed triggered");
+        // console.log("LoadLib- Removed triggered");
       } else if (change.type === "modified") {
 				// alert("LoadLib- change type of modified");
-        console.log("LoadLib- change type of modified");
+        // console.log("LoadLib- change type of modified");
 			}
     });
   });
 }
-
-//  // Saves a new message containing an image in Firebase.
-//  // This first saves the image in Firebase storage.
-//  function saveImageMessage(file) {
-//    // 1 - We add a message with a loading icon that will get updated with the shared image.
-//    firebase.firestore().collection('messages').add({
-//      name: getUserName(),
-//      imageUrl: LOADING_IMAGE_URL,
-//      profilePicUrl: getProfilePicUrl(),
-//      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-//    }).then(function(messageRef) {
-//      // 2 - Upload the image to Cloud Storage.
-//      var filePath = firebase.auth().currentUser.uid + '/' + messageRef.id + '/' + file.name;
-//      return firebase.storage().ref(filePath).put(file).then(function(fileSnapshot) {
-//        // 3 - Generate a public URL for the file.
-//        return fileSnapshot.ref.getDownloadURL().then((url) => {
-//          // 4 - Update the chat message placeholder with the image’s URL.
-//          return messageRef.update({
-//            imageUrl: url,
-//            storageUri: fileSnapshot.metadata.fullPath
-//          });
-//        });
-//      });
-//    }).catch(function(error) {
-//      console.error('There was an error uploading a file to Cloud Storage:', error);
-//    });
-//  }
-
-//  // Saves the messaging device token to the datastore.
-//  function saveMessagingDeviceToken() {
-//    firebase.messaging().getToken().then(function(currentToken) {
-//      if (currentToken) {
-//        console.log('Got FCM device token:', currentToken);
-//        // Saving the Device Token to the datastore.
-//        firebase.firestore().collection('fcmTokens').doc(currentToken)
-//            .set({uid: firebase.auth().currentUser.uid});
-//      } else {
-//        // Need to request permissions to show notifications.
-//        requestNotificationsPermissions();
-//      }
-//    }).catch(function(error){
-//      console.error('Unable to get messaging token.', error);
-//    });
-//  }
-
-//  // Requests permissions to show notifications.
-//  function requestNotificationsPermissions() {
-//    console.log('Requesting notifications permission...');
-//    firebase.messaging().requestPermission().then(function() {
-//      // Notification permission granted.
-//      saveMessagingDeviceToken();
-//    }).catch(function(error) {
-//      console.error('Unable to get permission to notify.', error);
-//    });
-//  }
-
-//  // Triggered when a file is selected via the media picker.
-//  function onMediaFileSelected(event) {
-//    event.preventDefault();
-//    var file = event.target.files[0];
-
-//    // Clear the selection in the file picker input.
-//    imageFormElement.reset();
-
-//    // Check if the file is an image.
-//    if (!file.type.match('image.*')) {
-//      var data = {
-//        message: 'You can only share images',
-//        timeout: 2000
-//      };
-//      signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
-//      return;
-//    }
-//    // Check if the user is signed-in
-//    if (checkSignedInWithMessage()) {
-//      saveImageMessage(file);
-//    }
-//  }
-
-//  // Triggered when the send new message form is submitted.
-//  function onMessageFormSubmit(e) {
-//    e.preventDefault();
-//    // Check that the user entered a message and is signed in.
-//    if (messageInputElement.value && checkSignedInWithMessage()) {
-//      saveMessage(messageInputElement.value).then(function() {
-//        // Clear message text field and re-enable the SEND button.
-//        resetMaterialTextfield(messageInputElement);
-//        toggleButton();
-//      });
-//    }
-//  }
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
 function authStateObserver(user) {
@@ -284,6 +190,10 @@ function authStateObserver(user) {
     // Hide sign-in button.
     signInButtonElement.setAttribute("hidden", "true");
 
+    // alert("signed in!");
+    clearDisplay();
+    loadLibrary(userName);
+
     //  // We save the Firebase Messaging Device token and enable notifications.
     //  saveMessagingDeviceToken();
   } else {
@@ -295,6 +205,10 @@ function authStateObserver(user) {
 
     // Show sign-in button.
     signInButtonElement.removeAttribute("hidden");
+    
+    // Load sample library
+    clearDisplay();
+    loadSampleLibrary();
   }
 }
 
@@ -310,23 +224,9 @@ function checkSignedInWithMessage() {
     message: "You must sign-in first",
     timeout: 2000
   };
-  signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
+  // signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
   return false;
 }
-
-//  // Resets the given MaterialTextField.
-//  function resetMaterialTextfield(element) {
-//    element.value = '';
-//    element.parentNode.MaterialTextfield.boundUpdateClassesHandler();
-//  }
-
-//  // Template for messages.
-//  var MESSAGE_TEMPLATE =
-//      '<div class="message-container">' +
-//        '<div class="spacing"><div class="pic"></div></div>' +
-//        '<div class="message"></div>' +
-//        '<div class="name"></div>' +
-//      '</div>';
 
 // Adds a size to Google Profile pics URLs.
 function addSizeToGoogleProfilePic(url) {
@@ -338,96 +238,6 @@ function addSizeToGoogleProfilePic(url) {
 
 // A loading image URL.
 var LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif?a";
-
-//  // Delete a Message from the UI.
-//  function deleteMessage(id) {
-//    var div = document.getElementById(id);
-//    // If an element for that message exists we delete it.
-//    if (div) {
-//      div.parentNode.removeChild(div);
-//    }
-//  }
-
-//  function createAndInsertMessage(id, timestamp) {
-//    const container = document.createElement('div');
-//    container.innerHTML = MESSAGE_TEMPLATE;
-//    const div = container.firstChild;
-//    div.setAttribute('id', id);
-
-//    // If timestamp is null, assume we've gotten a brand new message.
-//    // https://stackoverflow.com/a/47781432/4816918
-//    timestamp = timestamp ? timestamp.toMillis() : Date.now();
-//    div.setAttribute('timestamp', timestamp);
-
-//    // figure out where to insert new message
-//    const existingMessages = messageListElement.children;
-//    if (existingMessages.length === 0) {
-//      messageListElement.appendChild(div);
-//    } else {
-//      let messageListNode = existingMessages[0];
-
-//      while (messageListNode) {
-//        const messageListNodeTime = messageListNode.getAttribute('timestamp');
-
-//        if (!messageListNodeTime) {
-//          throw new Error(
-//            `Child ${messageListNode.id} has no 'timestamp' attribute`
-//          );
-//        }
-
-//        if (messageListNodeTime > timestamp) {
-//          break;
-//        }
-
-//        messageListNode = messageListNode.nextSibling;
-//      }
-
-//      messageListElement.insertBefore(div, messageListNode);
-//    }
-
-//    return div;
-//  }
-
-//  // Displays a Message in the UI.
-//  function displayMessage(id, timestamp, name, text, picUrl, imageUrl) {
-//    var div = document.getElementById(id) || createAndInsertMessage(id, timestamp);
-
-// profile picture
-//  if (picUrl) {
-//    div.querySelector('.pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(picUrl) + ')';
-//  }
-
-//    div.querySelector('.name').textContent = name;
-//    var messageElement = div.querySelector('.message');
-
-//    if (text) { // If the message is text.
-//      messageElement.textContent = text;
-//      // Replace all line breaks by <br>.
-//      messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
-//    } else if (imageUrl) { // If the message is an image.
-//      var image = document.createElement('img');
-//      image.addEventListener('load', function() {
-//        messageListElement.scrollTop = messageListElement.scrollHeight;
-//      });
-//      image.src = imageUrl + '&' + new Date().getTime();
-//      messageElement.innerHTML = '';
-//      messageElement.appendChild(image);
-//    }
-//    // Show the card fading-in and scroll to view the new message.
-//    setTimeout(function() {div.classList.add('visible')}, 1);
-//    messageListElement.scrollTop = messageListElement.scrollHeight;
-//    messageInputElement.focus();
-//  }
-
-//  // Enables or disables the submit button depending on the values of the input
-//  // fields.
-//  function toggleButton() {
-//    if (messageInputElement.value) {
-//      submitButtonElement.removeAttribute('disabled');
-//    } else {
-//      submitButtonElement.setAttribute('disabled', 'true');
-//    }
-//  }
 
 // Checks that the Firebase SDK has been correctly setup and configured.
 function checkSetup() {
@@ -448,43 +258,19 @@ function checkSetup() {
 checkSetup();
 
 // Shortcuts to DOM Elements.
-//  var messageListElement = document.getElementById('messages');
-//  var messageFormElement = document.getElementById('message-form');
-//  var messageInputElement = document.getElementById('message');
-//  var submitButtonElement = document.getElementById('submit');
-//  var imageButtonElement = document.getElementById('submitImage');
-//  var imageFormElement = document.getElementById('image-form');
-//  var mediaCaptureElement = document.getElementById('mediaCapture');
 var userPicElement = document.getElementById("user-pic");
 var userNameElement = document.getElementById("user-name");
 var signInButtonElement = document.getElementById("sign-in");
 var signOutButtonElement = document.getElementById("sign-out");
-//  var signInSnackbarElement = document.getElementById('must-signin-snackbar');
 
 // Saves message on form submit.
 //  messageFormElement.addEventListener('submit', onMessageFormSubmit);
 signOutButtonElement.addEventListener("click", signOut);
 signInButtonElement.addEventListener("click", signIn);
 
-// Toggle for the button.
-//  messageInputElement.addEventListener('keyup', toggleButton);
-//  messageInputElement.addEventListener('change', toggleButton);
-
-// Events for image upload.
-//  imageButtonElement.addEventListener('click', function(e) {
-//    e.preventDefault();
-//    mediaCaptureElement.click();
-//  });
-//  mediaCaptureElement.addEventListener('change', onMediaFileSelected);
 
 // initialize Firebase
 initFirebaseAuth();
-
-//   // TODO: Enable Firebase Performance Monitoring.
-//  firebase.performance();
-
-//  // We load currently existing chat messages and listen to new ones.
-loadLibrary();
 
 //---------------FIREBASE END--------------------------///
 
@@ -564,10 +350,12 @@ function displayLibrary(book) {
   });
 }
 
-const theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, 0);
-addBookToLibrary(theHobbit);
-addBookToLibrary(new Book("Alice in Wonderland", "Lewis Caroll", 500, 0));
-addBookToLibrary(new Book("A Game Of Thrones", "George R. R. Martin", 694, 1));
+function loadSampleLibrary() {
+  const theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, 0);
+  addBookToLibrary(theHobbit);
+  addBookToLibrary(new Book("Alice in Wonderland", "Lewis Caroll", 500, 0));
+  addBookToLibrary(new Book("A Game Of Thrones", "George R. R. Martin", 694, 1));
+}
 
 function clearForm() {
   author.value = "";
@@ -580,9 +368,11 @@ function clearDisplay() {
 }
 
 function deleteBook(e) {
-  // if (!confirm("Are you sure you want to delete this book?")) {
-  // return;
-  // }
+  if (!confirm("Are you sure you want to delete this book?")) {
+  return;
+  }
+  
+  alert("delete triggered");
 	
 	let user = firebase.auth().currentUser;
 	// If signed in
@@ -600,7 +390,7 @@ function deleteBook(e) {
 
 function toggleStatus(e) {
   let nextIndex = indexDict[e.target.innerHTML] + 1;
-  if (nextIndex === 2) {
+  if (nextIndex === 3) {
     nextIndex = 0;
   }
   let newStatus = statusOptions[nextIndex];
