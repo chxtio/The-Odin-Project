@@ -19,60 +19,70 @@ const Gameboard = (() => {
   return { getBoard, updateBoard };
 })();
 
-// // player factory
-// const Player = (value) => {
-//   let _value = value;
-//   const getValue = function () {
-//     return _value;
-//   };
-//   return { getValue };
-// };
-
+// player factory
 const Player = (value) => {
   return { value: value };
 };
 
-// // Game controller module
-// const GameController (() => {
-//   return {};
-// })();
+// Game controller module
+const GameController = (() => {
+  const gameboard = Gameboard;
+  const currPlayer = Player("X");
+  const getCurrPlayer = () => currPlayer;
+  const switchPlayerTurn = () => {
+    if (currPlayer.value === "X") {
+      currPlayer.value = "O";
+    } else {
+      currPlayer.value = "X";
+    }
+  };
+
+  const playRound = (row, col) => {
+    const value = currPlayer.value;
+    // console.log("value: " + value);
+    if (gameboard.updateBoard(row, col, value)) {
+      // cellDiv.textContent = value;
+      console.log("board updated");
+    }
+    switchPlayerTurn();
+  };
+
+  return { getCurrPlayer, playRound, getBoard: gameboard.getBoard };
+})();
 
 // Display Controller module
 const DisplayController = (() => {
-  const game = Gameboard;
-  const board = game.getBoard();
-  const currPlayer = Player("X");
-  // console.log(board);
-  console.log("test");
+  const game = GameController;
   const uiBoard = document.querySelector(".board");
+  console.log(board);
 
-  board.forEach((row, rowInd) => {
-    row.forEach((cell, colInd) => {
-      // console.log(cell, col);
-      const cellDiv = document.createElement("div");
-      cellDiv.classList.add("cell");
-      cellDiv.textContent = cell;
-      cellDiv.dataset.rowInd = rowInd;
-      cellDiv.dataset.colInd = colInd;
-
-      cellDiv.addEventListener("click", () => {
-        const row = cellDiv.dataset.rowInd;
-        const col = cellDiv.dataset.colInd;
-        const value = currPlayer.value;
-        // console.log("value: " + value);
-        if (game.updateBoard(row, col, value)) {
-          cellDiv.textContent = value;
-          if (currPlayer.value === "X") {
-            currPlayer.value = "O";
-          } else {
-            currPlayer.value = "X";
-          }
-        }
+  const updateScreen = () => {
+    const board = game.getBoard();
+    const currPlayer = game.getCurrPlayer();
+    // Clear the board
+    uiBoard.textContent = "";
+    board.forEach((row, rowInd) => {
+      row.forEach((cell, colInd) => {
+        const cellDiv = document.createElement("div");
+        cellDiv.classList.add("cell");
+        cellDiv.textContent = cell;
+        cellDiv.dataset.rowInd = rowInd;
+        cellDiv.dataset.colInd = colInd;
+        uiBoard.appendChild(cellDiv);
       });
-
-      uiBoard.appendChild(cellDiv);
     });
+  };
+
+  // Add event listener for the board
+  uiBoard.addEventListener("click", (e) => {
+    const row = e.target.dataset.rowInd;
+    const col = e.target.dataset.colInd;
+    game.playRound(row, col);
+    updateScreen();
   });
 
-  // return {};
+  // Initial render
+  updateScreen();
 })();
+
+DisplayController;
