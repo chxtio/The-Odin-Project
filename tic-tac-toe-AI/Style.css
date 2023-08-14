@@ -134,3 +134,16 @@ body {
   /*   box-shadow: 0 0 30px #19965b; */
   animation: glowing 1.5s infinite;
 }
+
+/* Add a media query for screens with a maximum width of 600px (typical for mobile devices) */
+@media (max-width: 600px) {
+  .upper-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  #restart-button {
+    margin-bottom: 10px;
+  }
+}
