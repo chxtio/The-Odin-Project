@@ -277,12 +277,13 @@ const DisplayController = (() => {
   const game = GameController;
   const uiBoard = document.querySelector(".board");
   const restartButton = document.getElementById("restart-button");
-  // console.log(board);
+  const player1Tile = document.getElementById("player-1");
+  const playerBotTile = document.getElementById("player-bot");
 
-  const updatePlayerTiles = (currPlayer) => {
-    const player1Tile = document.getElementById("player-1");
-    const playerBotTile = document.getElementById("player-bot");
-    if (currPlayer.value === "X") {
+  const updatePlayerTiles = (player) => {
+    // const player1Tile = document.getElementById("player-1");
+    // const playerBotTile = document.getElementById("player-bot");
+    if (player === "X") {
       player1Tile.classList.add("active-player");
       playerBotTile.classList.remove("active-player");
     } else {
@@ -293,8 +294,8 @@ const DisplayController = (() => {
 
   const updateScreen = () => {
     const board = game.getBoard();
-    const currPlayer = game.getCurrPlayer();
-    updatePlayerTiles(currPlayer);
+    const player = game.getCurrPlayer().value;
+    updatePlayerTiles(player);
 
     // Clear the board
     uiBoard.textContent = "";
@@ -317,9 +318,12 @@ const DisplayController = (() => {
     if (winner === "X") {
       winDiv.textContent = "Player 1 wins!";
     } else if (winner === "O") {
+      updatePlayerTiles("O");
+      uiBoard.classList.add("computer-win");
       winDiv.textContent = "Computer wins!";
     } else {
-      winDiv.textContent = "Tie!";
+      uiBoard.classList.add("draw");
+      winDiv.textContent = "It's a draw!";
     }
     console.log("Game over!");
   };
@@ -334,19 +338,24 @@ const DisplayController = (() => {
     if (!gameOver && currPlayer.value === "X") {
       game.humanPlay(row, col);
       updateScreen();
+      if (game.terminal(board)) {
+        displayWin(game.winner(board));
+      }
     } else if (!gameOver && currPlayer.value === "O") {
       game.computerPlay();
       setTimeout(() => {
         updateScreen();
-      }, 0);
+        if (game.terminal(board)) {
+          displayWin(game.winner(board));
+        }
+      }, 300);
     } else {
       displayWin(game.winner(board));
     }
 
-    if (game.terminal(board)) {
-      // console.log("Game over!");
-      displayWin(game.winner(board));
-    }
+    // if (game.terminal(board)) {
+    //   displayWin(game.winner(board));
+    // }
   };
 
   // Add event listener for the board
@@ -361,6 +370,8 @@ const DisplayController = (() => {
     const winDiv = document.getElementById("win-status");
     winDiv.textContent = "";
     game.resetGame();
+    uiBoard.classList.remove("computer-win");
+    uiBoard.classList.remove("draw");
     updateScreen();
   });
 

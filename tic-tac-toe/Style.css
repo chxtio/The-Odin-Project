@@ -7,10 +7,7 @@ body {
 .game-container {
   text-align: center;
   margin-top: 20px;
-  /*   background-color: #f0f0f0; */
   color: #f8f8f2;
-  /*   border-spacing: 0;
-  border-bottom: 5px solid #272822; */
 }
 
 .upper-section {
@@ -85,13 +82,20 @@ body {
   grid-template-columns: repeat(3, 100px);
   gap: 5px;
   width: 320px;
-  margin: 20px auto 0px auto;
+  margin: 30px auto 0px auto;
   background-color: red;
   border-spacing: 0;
   border-bottom: 5px solid #272822;
   border-radius: 2px;
   box-shadow: 0 0 30px #19965b;
-  /*   box-shadow: 0 0 30px red; */
+}
+
+.board.computer-win {
+  box-shadow: 0 0 30px red;
+}
+
+.board.draw {
+  box-shadow: 0 0 30px yellow;
 }
 
 .cell {
