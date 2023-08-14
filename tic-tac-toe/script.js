@@ -47,9 +47,7 @@ const GameController = (() => {
   };
 
   const playRound = (row, col) => {
-    const value = currPlayer.value;
-    // console.log("value: " + value);
-    if (gameboard.updateBoard(row, col, value)) {
+    if (gameboard.updateBoard(row, col, currPlayer.value)) {
       console.log("board updated");
       switchPlayerTurn();
     }
@@ -62,9 +60,8 @@ const GameController = (() => {
     }
   };
 
-  function winner() {
-    console.log("test: ");
-    console.log(board);
+  function winner(board) {
+    // console.log(board);
     // Horizontal Rows
     for (let r = 0; r < board.length; r++) {
       if (board[r][0] === "X" && board[r][1] === "X" && board[r][2] === "X") {
@@ -101,9 +98,9 @@ const GameController = (() => {
     return null;
   }
 
-  const terminal = () => {
-    if (winner()) {
-      console.log("winner: " + winner());
+  const terminal = (board) => {
+    if (winner(board)) {
+      // console.log("winner: " + winner(board));
       return true;
     }
 
@@ -117,9 +114,8 @@ const GameController = (() => {
     return true;
   };
 
-  const getRandomMove = () => {
+  const actions = (board) => {
     const emptyCells = [];
-    const board = gameboard.getBoard();
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         if (board[i][j] === "") {
@@ -127,6 +123,120 @@ const GameController = (() => {
         }
       }
     }
+    return emptyCells;
+  };
+
+  /* ----------------Minimax logic--------------- */
+  const copyBoard = (board) => {
+    // Deep copy of the board
+    return board.map((row) => [...row]);
+  };
+
+  const isValidMove = (board, action) => {
+    const available_actions = actions(board);
+    // return available_actions.includes(action);
+    return available_actions.some(
+      (availableAction) =>
+        availableAction.row === action.row && availableAction.col === action.col
+    );
+  };
+
+  const result = (board, action, isMax) => {
+    if (!isValidMove(board, action)) {
+      throw new Error("Invalid move: " + action);
+      console.log("Invalid move");
+    } else {
+      const boardCopy = copyBoard(board);
+      // const player = getCurrPlayer().value;
+      const player = isMax ? "X" : "O";
+      boardCopy[action.row][action.col] = player;
+      // console.log("boardCopy: ", boardCopy);
+      return boardCopy;
+    }
+  };
+
+  const utility = (board) => {
+    const whoWon = winner(board);
+    if (whoWon === "X") return 1;
+    if (whoWon === "O") return -1;
+    return 0;
+  };
+
+  const maxVal = (board) => {
+    if (terminal(board)) {
+      // console.log("end game: ", board);
+      return utility(board);
+    }
+
+    let val = -Infinity;
+    for (const action of actions(board)) {
+      val = Math.max(val, minVal(result(board, action, true)));
+    }
+
+    return val;
+  };
+
+  const minVal = (board) => {
+    if (terminal(board)) {
+      return utility(board);
+    }
+
+    let val = Infinity;
+    for (const action of actions(board)) {
+      val = Math.min(val, maxVal(result(board, action, false)));
+    }
+
+    return val;
+  };
+
+  const miniMax = (board) => {
+    if (terminal(board)) return null;
+
+    let bestMove;
+
+    const player = getCurrPlayer().value;
+    if (player === "X") {
+      console.log("Max's turn");
+      let bestVal = -Infinity;
+
+      for (const action of actions(board)) {
+        const s_prime = result(board, action, true);
+        // console.log("s_prime: " + s_prime);
+        const val = minVal(s_prime);
+        console.log("action: " + action.row + " " + actioncol);
+        console.log("\tval: " + val);
+        if (val > bestVal) {
+          bestVal = val;
+          bestMove = { row: action.row, col: action.col };
+          console.log("\tupdated bestVal: " + bestVal);
+          console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
+        }
+      }
+    } else {
+      console.log("Min's turn");
+      let bestVal = Infinity;
+
+      for (const action of actions(board)) {
+        const s_prime = result(board, action, false);
+        const val = maxVal(s_prime);
+        console.log("action: " + action.row + " " + action.col);
+        console.log("\tval: " + val);
+        if (val < bestVal) {
+          bestVal = val;
+          bestMove = { row: action.row, col: action.col };
+          console.log("\tupdated bestVal: " + bestVal);
+          console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
+        }
+      }
+    }
+
+    console.log(`bestMove: ${bestMove.row} ${bestMove.col}`);
+    return bestMove;
+  };
+
+  /* ----------------Player moves--------------- */
+  const getRandomMove = (board) => {
+    const emptyCells = actions(board);
     if (emptyCells.length === 0) {
       return null; // No valid move available
     }
@@ -135,8 +245,10 @@ const GameController = (() => {
   };
 
   const computerPlay = () => {
-    const randomMove = getRandomMove();
-    playRound(randomMove.row, randomMove.col);
+    // const move = getRandomMove(board);
+    const board = gameboard.getBoard();
+    const move = miniMax(board);
+    playRound(move.row, move.col);
   };
 
   const humanPlay = (row, col) => {
@@ -160,7 +272,7 @@ const DisplayController = (() => {
   const game = GameController;
   const uiBoard = document.querySelector(".board");
   const restartButton = document.getElementById("restart-button");
-  console.log(board);
+  // console.log(board);
 
   const updatePlayerTiles = (currPlayer) => {
     const player1Tile = document.getElementById("player-1");
@@ -198,34 +310,37 @@ const DisplayController = (() => {
   const displayWin = (winner) => {
     const winDiv = document.getElementById("win-status");
     if (winner === "X") {
-      winDiv.textContent = "Player 1 wins";
+      winDiv.textContent = "Player 1 wins!";
     } else if (winner === "O") {
-      winDiv.textContent = "Computer wins";
+      winDiv.textContent = "Computer wins!";
     } else {
-      winDiv.textContent = "Tie";
+      winDiv.textContent = "Tie!";
     }
     console.log("Game over!");
   };
 
   const checkMove = (e) => {
+    const board = game.getBoard();
     const row = e.target.dataset.rowInd;
     const col = e.target.dataset.colInd;
     const currPlayer = game.getCurrPlayer();
-    const gameOver = game.terminal();
+    const gameOver = game.terminal(board);
 
     if (!gameOver && currPlayer.value === "X") {
       game.humanPlay(row, col);
       updateScreen();
     } else if (!gameOver && currPlayer.value === "O") {
       game.computerPlay();
-      updateScreen();
+      setTimeout(() => {
+        updateScreen();
+      }, 0);
     } else {
-      displayWin(game.winner());
+      displayWin(game.winner(board));
     }
 
-    if (game.terminal()) {
+    if (game.terminal(board)) {
       // console.log("Game over!");
-      displayWin(game.winner());
+      displayWin(game.winner(board));
     }
   };
 
