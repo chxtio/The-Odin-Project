@@ -48,7 +48,6 @@ const GameController = (() => {
 
   const playRound = (row, col) => {
     if (gameboard.updateBoard(row, col, currPlayer.value)) {
-      console.log("board updated");
       switchPlayerTurn();
     }
   };
@@ -61,7 +60,6 @@ const GameController = (() => {
   };
 
   function winner(board) {
-    // console.log(board);
     // Horizontal Rows
     for (let r = 0; r < board.length; r++) {
       if (board[r][0] === "X" && board[r][1] === "X" && board[r][2] === "X") {
@@ -128,13 +126,11 @@ const GameController = (() => {
 
   /* ----------------Minimax logic--------------- */
   const copyBoard = (board) => {
-    // Deep copy of the board
     return board.map((row) => [...row]);
   };
 
   const isValidMove = (board, action) => {
     const available_actions = actions(board);
-    // return available_actions.includes(action);
     return available_actions.some(
       (availableAction) =>
         availableAction.row === action.row && availableAction.col === action.col
@@ -147,10 +143,8 @@ const GameController = (() => {
       console.log("Invalid move");
     } else {
       const boardCopy = copyBoard(board);
-      // const player = getCurrPlayer().value;
       const player = isMax ? "X" : "O";
       boardCopy[action.row][action.col] = player;
-      // console.log("boardCopy: ", boardCopy);
       return boardCopy;
     }
   };
@@ -162,28 +156,35 @@ const GameController = (() => {
     return 0;
   };
 
-  const maxVal = (board) => {
+  const maxVal = (board, alpha, beta) => {
     if (terminal(board)) {
-      // console.log("end game: ", board);
       return utility(board);
     }
 
     let val = -Infinity;
     for (const action of actions(board)) {
       val = Math.max(val, minVal(result(board, action, true)));
+      // Perform alpha-beta pruning
+      if (val >= beta) {
+        return val;
+      }
     }
 
     return val;
   };
 
-  const minVal = (board) => {
+  const minVal = (board, alpha, beta) => {
     if (terminal(board)) {
       return utility(board);
     }
 
     let val = Infinity;
     for (const action of actions(board)) {
-      val = Math.min(val, maxVal(result(board, action, false)));
+      val = Math.min(val, maxVal(result(board, action, false), alpha, beta));
+      // Perform alpha-beta pruning
+      if (val <= alpha) {
+        return val;
+      }
     }
 
     return val;
@@ -196,41 +197,45 @@ const GameController = (() => {
 
     const player = getCurrPlayer().value;
     if (player === "X") {
-      console.log("Max's turn");
       let bestVal = -Infinity;
+      let alpha = -Infinity;
+      let beta = Infinity;
 
       for (const action of actions(board)) {
         const s_prime = result(board, action, true);
         // console.log("s_prime: " + s_prime);
         const val = minVal(s_prime);
-        console.log("action: " + action.row + " " + actioncol);
-        console.log("\tval: " + val);
+        // console.log("action: " + action.row + " " + action.col);
+        // console.log("\tval: " + val);
         if (val > bestVal) {
           bestVal = val;
           bestMove = { row: action.row, col: action.col };
-          console.log("\tupdated bestVal: " + bestVal);
-          console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
+          // console.log("\tupdated bestVal: " + bestVal);
+          // console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
         }
+        alpha = Math.max(alpha, bestVal);
       }
     } else {
-      console.log("Min's turn");
       let bestVal = Infinity;
+      let alpha = -Infinity;
+      let beta = Infinity;
 
       for (const action of actions(board)) {
         const s_prime = result(board, action, false);
         const val = maxVal(s_prime);
-        console.log("action: " + action.row + " " + action.col);
-        console.log("\tval: " + val);
+        // console.log("action: " + action.row + " " + action.col);
+        // console.log("\tval: " + val);
         if (val < bestVal) {
           bestVal = val;
           bestMove = { row: action.row, col: action.col };
-          console.log("\tupdated bestVal: " + bestVal);
-          console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
+          // console.log("\tupdated bestVal: " + bestVal);
+          // console.log(`\tupdated bestMove: ${bestMove.row} ${bestMove.col}`);
         }
+        beta = Math.min(beta, bestVal);
       }
     }
 
-    console.log(`bestMove: ${bestMove.row} ${bestMove.col}`);
+    // console.log(`bestMove: ${bestMove.row} ${bestMove.col}`);
     return bestMove;
   };
 
@@ -238,7 +243,7 @@ const GameController = (() => {
   const getRandomMove = (board) => {
     const emptyCells = actions(board);
     if (emptyCells.length === 0) {
-      return null; // No valid move available
+      return null;
     }
     const randomIndex = Math.floor(Math.random() * emptyCells.length);
     return emptyCells[randomIndex];
